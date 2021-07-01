@@ -1,0 +1,171 @@
+//#########################################Terminal 1
+//Inicializacion de USRP
+sudo stop openbts
+uhd_find_devices
+uhd_usrp_probe
+
+//14
+sudo service asterisk status
+sudo status asterisk
+//sudo systemctl status asterisk  No sirve en ubuntu 14
+//Activacion de servicios
+sudo start sipauthserve
+sudo start smqueue
+sudo start asterisk
+sudo start openbts
+
+//Configuracion de la Red
+cd dev/openbts/apps/
+//Iniciamos la linea de comandos de OpenBTS
+./OpenBTSCLI
+config GSM.Radio.C0 202
+config GSM.Radio.Band 850
+config GSM.Radio.C0 202
+rxgain 5
+rxgain
+noise
+power 30
+config Control.LUR.OpenRegistration .*
+config GSM.Identity.ShortName Prueba
+config GSM.Radio
+tmsis
+
+
+Otros comandos
+cellid      //Respuesta "MCC=001 MNC=01 LAC=1000 CI=10"
+config GSM.Identity
+config GSM.Identity.MCC 740
+config GSM.Identity.MNC 13
+//Si se edita esto Identity.MCC y Identity.MNC se edita el archivo "sip-custom-contexts.conf"
+//Se respalda el archivo original
+sudo cp /etc/asterisk/sip-custom-contexts.conf /etc/asterisk/sip-custom-contexts.conf.ori
+sudo gedit /etc/asterisk/sip-custom-contexts.conf
+//En la linea 10
+"[00101100010](optionsBTS,CodecBTS)" por "[74013100010](optionsBTS,CodecBTS)"
+Lo mismo ocurre en el archivo extensions.conf
+"same = n,Dial(SIP/00101100010/${IMSI})" por "same = n,Dial(SIP/74013100010/${IMSI})"
+//#########################################Terminal 2
+//Registro de usuarios
+cd ~/dev/NodeManager
+//Para agregar usuarios
+./nmcli.py sipauthserve subscribers create "nombre" IMSI”imsi” “número celular”
+//Ejem:
+./nmcli.py sipauthserve subscribers create Usuario1 IMSI740130000000001 0900000001
+./nmcli.py sipauthserve subscribers create Usuario3 IMSI740130000000003 0900000003
+./nmcli.py sipauthserve subscribers create Usuario4 IMSI740130000000004 0900000004
+
+//Para leer los datos guardados
+./nmcli.py sipauthserve subscribers read
+//Para eliminar datos
+//Ejem:
+./nmcli.py sipauthserve subscribers delete imsi IMSI740130000000001
+
+//#########################################Terminal 3
+
+sip reload
+dialplan reload
+sip show peers
+
+//Iniciamos la linea de comandos de Asterisk
+sudo asterisk -rvvvv
+
+//Para agregar usuarios en la base de datos de Asterisk
+//Ejemplo
+sudo asterisk -rx "database put IMSI IMSI740130000000001 0900000001"
+sudo asterisk -rx "database put PHONENUMBER 0900000001 IMSI740130000000001"
+
+sudo asterisk -rx "database put IMSI IMSI740130000000003 0900000003"
+sudo asterisk -rx "database put PHONENUMBER 0900000003 IMSI740130000000003"
+
+sudo asterisk -rx "database put IMSI IMSI740130000000004 0900000004"
+sudo asterisk -rx "database put PHONENUMBER 0900000004 IMSI740130000000004"
+//Visualizacion de datos
+database show
+
+//Para eliminar datos 
+//Ejem:
+database del IMSI IMSI740130000000001
+database del PHONENUMBER 0900000001
+
+//#########################################Terminal 4
+//Respaldamos el archivo original
+sudo cp /etc/asterisk/extensions.conf /etc/asterisk/extensions.conf.original
+sudo gedit /etc/asterisk/extensions.conf
+//Se borra todo y se pega toda la informacion en extensions.conf
+[from-openBTS]
+exten => _09X.,1,Verbose(Dialplan started)
+same = n,Set(CALLER_IMSI=${CALLERID(num)})
+same = n,Verbose(Get CID from CALLER_IMSI: ${CALLER_IMSI})
+same = n,Set(CID=${DB(IMSI/${CALLER_IMSI})})
+same = n,Set(CALLERID(num)=${CID})
+same = n,Verbose(Get IMSI from EXTEN: ${EXTEN})
+same = n,Set(IMSI=${DB(PHONENUMBER/${EXTEN})})
+same = n,Dial(SIP/00101100010/${IMSI})
+same = n,Hangup
+
+//En la linea de comandos de asterisk ponemos los siguientes comandos:
+
+sip reload
+dialplan reload
+sip show peers
+
+//@@@@@@@@Configuracion de GPRS
+//En la linea de comandos de OpenBTS
+config GPRS
+config GPRS.Enable 1
+rawconfig GGSN.TunName GPRS  #no es necesario por defecto@ GGSN.TunName sgsntun
+//Para configurar el GGSN con dns de Google
+config GGSN
+config GGSN.DNS 8.8.8.8 8.8.4.4 //Se habilita dns
+config GGSN.Firewall.Enable 0 //Se desactiva firewall
+
+unconfig GGSN.DNS //Se deshabilita dns
+//Salir de la linea de comandos de OpenBTS
+sudo stop openbts
+sudo start openbts
+
+//Esperar e iniciar el Cli(linea de comandos) de openbts y con los 2 comandos de list podemos ver si esta funcionando el GPRS
+
+sgsn list
+gprs list
+tmsis
+
+//#########################################Terminal 5
+//Dar acceso a internet a los terminales
+//#@@@@@@@@@@@Primera forma
+sudo iptables-restore < /etc/OpenBTS/iptables.rules  //Esto se borra una vez reiniciada la PC
+//Para mantener configuracion luego de reiniciar
+sudo gedit /etc/network/interfaces
+#
+auto eth0
+iface eth0 inet dhcp
+pre-up iptables restore < /etc/OpenBTS/iptables.rules
+#
+Reiniciar interfaces 
+sudo /etc/init.d/networking restart  //Si da error se intenta con lo siguiente 
+
+sudo ifconfig eth0 down
+sudo ifconfig eth0 up
+//Si no funciona lo anterior
+sudo service network-manager restart
+
+//#@@@@@@@@@@@Segunda forma
+//Esto se borra una vez reiniciada la PC
+sudo iptables -A POSTROUTING -t nat -s 192.168.99.0/24 ! -d 192.168.99.0/24 -j MASQUERADE
+sudo iptables -A FORWARD -i eth0 -o sgsntun -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i sgsntun -o eth0 -j ACCEPT
+//Permite visualizar configuracion anterior
+sudo iptables -L -v
+sudo iptables -nvL
+
+
+//#@@@@@@@@@@@Tercera forma
+//Esto se borra una vez reiniciada la PC
+
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward 1>/dev/null
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+
+
+
+

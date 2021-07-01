@@ -1,0 +1,27 @@
+//Apagamos el servicio de OpenBTS 
+sudo stop openbts
+//Probamos el USRP
+uhd_find_devices 
+uhd_usrp_probe
+
+//Ingresamos a la carpeta de instalacion
+cd kalibrate/
+//Con los siguientes comandos se visualizan las funciones del software Kalibrate:
+src/kal -h
+//Visualización de las funciones de Kalibrate.
+src/kal -s GSM850
+src/kal -s GSM900
+src/kal -s EGSM
+src/kal -s DCS
+src/kal -s PCS
+
+//Si no funcionan
+cd
+kalibrate/src/kal -s GSM850
+o
+kal -s GSM850
+//Y asi con las demas
+
+
+
+
