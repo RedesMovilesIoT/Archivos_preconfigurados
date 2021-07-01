@@ -15,7 +15,8 @@ sudo /usr/lib/uhd/utils/uhd_images_downloader.py
 
 ###########################################################################
 #To install ASN.1 C compiler that turns the formal ASN.1 specifications into the C code:
-git clone https://github.com/mgp25/OpenBTS-UMTS
+#git clone https://github.com/mgp25/OpenBTS-UMTS
+git clone https://github.com/RedesMovilesIoT/OpenBTS-UMTS.git
 cd OpenBTS-UMTS/
 mv asn1c-0.9.23.tar.gz ~/
 cd
