@@ -1,0 +1,59 @@
+OpenBTS-UMTS Launch
+#To run OpenBTS-UMTS and Subscriber Registry:
+
+$ uhd_find_devices
+$ uhd_usrp_probe 
+
+cd OpenBTS-UMTS/apps
+gedit OpenBTS-UMTS.cpp
+Se busca transceiverPath
+#const char * transceiverPath = "./transceiver" y cámbielo a ./TransceiverUHD/transceiver
+
+@@@@@@@@@@En terminal 1
+$ cd OpenBTS-UMTS/apps
+$ sudo ./OpenBTS-UMTS
+
+Comandos de OpenBTS-UMTS
+# help
+# version
+# power
+# rxgain
+# cellid
+# sgsn list
+# devconfig
+# devconfig GGSN.DNS 8.8.8.8
+# devconfig GGSN.Firewall.Enable 0
+# devconfig GGSN.TunName sgsntun
+# devconfig UMTS.Identity.MCC 001
+# devconfig UMTS.Identity.MNC 01
+# devconfig UMTS.Radio.Band 900
+# devconfig UMTS.Radio.C0 3050 
+# devconfig UMTS.Radio.RxGain 57
+# devconfig UMTS.Radio.PowerManager.MaxAttenDB 35
+# devconfig UMTS.Radio.PowerManager.MinAttenDB 35
+
+
+@@@@@@@@@@@@@@En terminal 2
+
+$ cd subscriberRegistry/apps
+$ sudo ./sipauthserve
+
+
+@@@@@@@@@@@@En terminal 3
+Para hacer el registro de usuarios
+$ cd OpenBTS-UMTS/NodeManager/
+
+#sudo ./nmcli.py sipauthserve subscribers create "name" imsi msisdn ki
+#$ ./nmcli.py sipauthserve subscribers create "nombre" IMSI”imsi” “número celular”
+#Ejem:
+$ sudo ./nmcli.py sipauthserve subscribers create Usuario1 IMSI740130000000001 00501 00112233445566778899aabbccddeeff
+#o 0990017316 o +593990017316
+$ sudo ./nmcli.py sipauthserve subscribers create Usuario2 IMSI740130000000002 0990017317 00112233445566778899aabbccddeeff
+$ sudo ./nmcli.py sipauthserve subscribers create Usuario4 IMSI740130000000004 098702644 00112233445566778899aabbccddeeff
+                    
+Para leer los datos
+$ sudo ./nmcli.py sipauthserve subscribers read 
+Para borrar los datos
+$ sudo ./nmcli.py sipauthserve subscribers delete imsi IMSI740130000000001
+
+
