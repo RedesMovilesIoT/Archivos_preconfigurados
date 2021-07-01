@@ -1,0 +1,12 @@
+#Luego para probar asterisk poner 
+#$ sudo asterisk -vvvr 
+
+#En asterisk 
+#sip show peers
+#sip reload
+#dialplan reload
+
+#ifconfig  para visualizar las interfaces de red actuales del equipo y poder configurar zoiper
+#https://www.zoiper.com/en/voip-softphone/download/classic
+#Zoiper 3 Linux
+#sudo ./Zoiper_3.3_Linux_Free_64Bit.run

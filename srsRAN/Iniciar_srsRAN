@@ -1,0 +1,23 @@
+
+#@@@@@@@@@@@  SrsLTE
+Terminal 1
+uhd_find_devices
+uhd_usrp_probe
+
+cd srsRAN/srsepc/
+sudo srsepc epc.conf
+
+Terminal 2
+
+cd srsRAN/srsenb/
+sudo srsenb enb.conf
+
+Terminal 3
+Cada vez que se inicia se configura la red wifi
+cd ~/srsRAN/srsepc
+sudo srsepc_if_masq.sh ens33
+
+Se crea APN en el celular
+Name srsLTE //o cualquier nombre
+APN srsapn
+

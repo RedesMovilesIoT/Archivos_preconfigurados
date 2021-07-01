@@ -1,0 +1,83 @@
+#Opciones de GUI web
+#En un navegador web, 
+localhost/nipc
+//Terminal 1
+En un terminal en la direccion donde se descarga "hostedx115.rbf" (con el scrip de yate parte 2 se
+descarga en la carpeta personal)
+$ bladeRF-cli -l hostedx115.rbf   //Subir imagen fpga en el BladeRF x115
+$ bladeRF-cli -e version	  //Para leer la version 
+#Para descargar diferentes versiones de fpga
+#@@@@@@@@@@@@@@@bladeRF FPGA images
+#https://www.nuand.com/fpga_images/
+
+#wget https://www.nuand.com/fpga/v0.9.0/hostedx115.rbf
+#wget https://www.nuand.com/fpga/v0.11.1/hostedx115.rbf
+#wget https://www.nuand.com/fpga/v0.12.0/hostedx115.rbf
+
+#@@@@@@@@@@@@@@@@bladeRF FX3 firmware images
+#https://www.nuand.com/fx3_images/
+#wget -c http://www.nuand.com/fx3/bladeRF_fw_v1.9.1.img  Con instalacion de la fuente se instala esta version
+#wget -c http://www.nuand.com/fx3/bladeRF_fw_v2.3.2.img
+#bladeRF-cli -f bladeRF_fw_v1.9.1.img -v verbose    //Subir imagen firmware en el BladeRF x115
+#bladeRF-cli -f bladeRF_fw_v2.3.2.img -v verbose
+
+
+#https://www.nuand.com/support/
+Para iniciar  yatebts 651
+$ sudo yate
+############################
+//Terminal 2
+Para iniciar yate 6256
+
+$ telnet 127.0.0.1 5038
+
+#Estos son algunos de los comandos que se utilizan en Yate
+#yate/modules/radio/ybladerf.cpp   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#nib list registered		     //version nib 
+#o   ##  nipc list registered        //version nipc 
+#nib list rejected
+#nib reload
+#mbts gprs list ms
+#mbts sgsn list
+#mbts power
+#mbts rxgain
+#mbts noise
+#mbts gprs stat
+#mbts cellid
+#mbts version
+#mbts power
+#mbts config
+#mbts stats
+
+#Mensase de bienvenida en
+#cd /usr/local/share/yate/scripts
+#sudo gedit nipc.js o nib.js 
+#buscar
+#sms_registration
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Configuracion de interfaz de red
+//Terminal 3
+#sudo iptables -A POSTROUTING -t nat -s 192.168.99.0/24 ! -d 192.168.99.0/24 -j MASQUERADE
+#sudo iptables -A FORWARD -i <wlan> -o sgsntun -m state --state RELATED,ESTABLISHED -j ACCEPT
+#sudo iptables -A FORWARD -i sgsntun -o <wlan> -j ACCEPT
+
+
+$ sudo iptables -A POSTROUTING -t nat -s 192.168.99.0/24 ! -d 192.168.99.0/24 -j MASQUERADE
+$ sudo iptables -A FORWARD -i ens32 -o sgsntun -m state --state RELATED,ESTABLISHED -j ACCEPT
+$ sudo iptables -A FORWARD -i sgsntun -o ens32 -j ACCEPT
+$ sudo ldconfig
+
+#o otra 
+#echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward 1>/dev/null
+#sudo iptables -t nat -A POSTROUTING -o ens32 -j MASQUERADE
+
+#@@@@@@@@@@@@@@@
+#Para visualizar la primera configuracion de la interfaz de red
+#sudo iptables -L -v
+#sudo iptables -nvL
+
+
+
+
+

@@ -1,0 +1,59 @@
+Programar Chip
+pcsc_scan
+
+
+Ultima version de pySim da error
+Solucion
+sudo apt install python-pip
+pip install pytlv
+No se arregla completamente igual sigue marcando errores
+Solucion 100% real no fake descargar una version preliminar
+En el scrip "2.Instalación_de _herramientas_de_configuración_USIM.sh" se descarga la rama "pmaier/wip" que corresponde a diciembre de 2019 que no presenta este error
+
+
+cd pysim_12_19/
+
+o
+
+cd pysim/
+./pySim-read.py -p 0
+
+
+Programación de USIM en Ubuntu
+La configuración se realiza mediante el programa PySIM, el comando a emplearse es:
+$ ./pySim-prog.py
+Dependiendo de la información que se vaya a configurar en la tarjeta USIM, se agregan más opciones al comando anterior. A continuación, se presenta un ejemplo de cómo se va a programar las tarjetas USIM; los parámetros que se van a programar, así como sus correspondientes valores se encuentran en la se pueden ver a continuación: 
+Entonces, si tiene una tarjeta SIM con los siguientes parámetros:
+##########################################Chip1################################
+Con IMSI 01
+•	CCID: 8959313457935123946
+•	MILENAGE algorithm 
+•	IMSI = 740130000000001 
+•	K = 00112233445566778899aabbccddeeff 
+•	Using OPc 
+•	OPc = 63bfa50ee6523365ff14c1f45f88737d
+
+
+
+
+./pySim-prog.py -p 0 -n UTPL20214G -a 88888888 -x 740 -y 13 -i 740130000000001 -s 8959313457935123946 --opc=63bfa50ee6523365ff14c1f45f88737d -k 00112233445566778899aabbccddeeff
+
+
+##########################################Chip2################################
+Con IMSI 02
+	ICCID:8959313457935123995
+•	MILENAGE algorithm 
+•	IMSI = 740130000000002
+•	K = 00112233445566778899aabbccddeeff 
+•	Using OPc 
+•	OPc = 63bfa50ee6523365ff14c1f45f88737d
+
+./pySim-prog.py -p 0 -n UTPL20214G -a 88888888 -x 740 -y 13 -i 740130000000002 -s 8959313457935123995 --opc=63bfa50ee6523365ff14c1f45f88737d -k 00112233445566778899aabbccddeeff
+
+
+
+Con IMSI 03
+./pySim-prog.py -p 0 -n UTPL20214G -a 88888888 -x 740 -y 13 -i 740130000000003 -s 8959313457935123961 --opc=63bfa50ee6523365ff14c1f45f88737d -k 00112233445566778899aabbccddeeff 
+Con IMSI 04
+./pySim-prog.py -p 0 -n UTPL20214G -a 88888888 -x 740 -y 13 -i 740130000000004 -s 8959313457935123953 --opc=63bfa50ee6523365ff14c1f45f88737d -k 00112233445566778899aabbccddeeff
+
