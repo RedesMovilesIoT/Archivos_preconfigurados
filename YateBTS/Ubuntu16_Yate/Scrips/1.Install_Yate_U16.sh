@@ -16,9 +16,9 @@ dpkg -s libusb-1.0-0 libusb-1.0-0-dev
 sudo apt-get -y install doxygen help2man pandoc
 #@@@@@@@@@@@@@@@@@@@
 # Web dependencies
-sudo add-apt-repository -y ppa:ondrej/php
-sudo apt-get update
-sudo apt-get -y install php5.6 apache2
+# Solucion a ppa:ondrej/php
+#https://askubuntu.com/questions/773692/14-04-cleanly-upgrade-to-ppaondrej-php-from-ppaondrej-php5-5-6
+sudo apt-get install libapache2-mod-php7.0 
 #bladeRF
 sudo touch /etc/udev/rules.d/90-yate.rules
 cd /etc/udev/rules.d
